@@ -120,6 +120,8 @@ $$
 \sum_N \log \sum_z p(x_i,z|\theta) = \sum_N \log \sum_z q_i(z_j) \frac{p(x_i,z_j|\theta)}{q_i(z_j)} \geq \sum_N \sum_z q_i(z_j) \log \frac{p(x_i,z_j|\theta)}{q_i(z_j)}
 $$
 
+其中每一个样本$x_i$都有一个对应的$q_i(z)$分布
+
 上述过程描述了$LL(\theta)$的下界，而我们希望$\arg \max LL(\theta)$，因此我们希望下界能取到等号，即我们希望等式成立，根据 Jensen 不等式，等式成立当且仅当$\frac{p(x_i,z_j|\theta)}{q(z_j)} = c$,$c$为常数，且$\sum q_i(z_j) = 1$，因此有
 
 $$

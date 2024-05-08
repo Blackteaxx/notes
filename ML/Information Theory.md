@@ -154,22 +154,77 @@ $$
 H(X,Y) = E[I(X,Y)] = - \sum_x \sum_y p(x,y) \log p(x,y)
 $$
 
-#### Pre-knowledge
+#### Prior Knowledge
 
 1. 上凸函数/Concave Function
    $$
    \alpha f(x) + (1-\alpha)f(x) \leq f(\alpha x + (1-\alpha) x),\ \alpha \in [0,1]
    $$
 2. Jensen 不等式
-   若 f 严格上凸(等号仅取在$\lambda=0/1$)，则
+   若 f 严格上凸(等号仅取在$\alpha=0/1$或者$x_1=x_2$)，则
 
    $$
    \sum_k \lambda_k f(x_k) \leq f(\sum_k \lambda_k x_k), \ \sum_k \lambda_k = 1
    $$
 
-   $proof$: 使用数学归纳法，在 n+1 时 同时使用 2 and n 时的情况
+   $proof$:
 
-   = 取在 $\lambda_k = 1, other \lambda = 0$或者$x_1 = x_2 = \dots = x_{n+1}$
+   1. $n=2$ 时，$\lambda_1 f(x_1) + \lambda_2 f(x_2) \leq f(\lambda_1 x_1 + \lambda_2 x_2)$, $\sum \lambda_i = 1$, 并且等号仅在 $\lambda_1 = 1, \lambda_2 = 0$或者$x_1 = x_2$时取到
+   2. 假设对于 $n=k$ 时成立，那么对于 $n=k+1$ 时，要证明
+
+      $$
+      \sum_1^{k+1} \lambda_i f(x_i) \leq f(\sum_{i+1} \lambda_i x_i)
+      $$
+
+      即证明
+
+      $$
+      \begin{align}
+         \sum_1^{k} \lambda_i f(x_i) + \lambda_{k+1} f(x_{k+1}) \leq f(\sum_1^{k} \lambda_i x_i + \lambda_{k+1} x_{k+1})
+      \end{align}
+      $$
+
+      已知
+
+      $$
+      \sum_1^k \lambda_i = 1
+      $$
+
+      将 inequality 左边第一项转化为合一项，即
+
+      $$
+       \sum_1^{k} \lambda_i f(x_i) =
+       \sum_1^k \lambda_i \sum_1^{k} \frac{\lambda_i}{\sum_1^k \lambda_i} f(x_i) \leq
+      \sum_1^k \lambda_i f(\frac{\lambda_i}{\sum_1^k \lambda_i} x_i)
+      $$
+
+      = 当且仅当 $\lambda_i = 1$ 或者 所有$x_i$均相等时取等号
+
+      于是(1)变为
+
+      $$
+      \begin{align}
+         \sum_1^{k} \lambda_i f(x_i) + \lambda_{k+1} f(x_{k+1})
+         \leq \sum_1^k \lambda_i f(\frac{\lambda_i}{\sum_1^k \lambda_i} x_i) + \lambda_{k+1} f(x_{k+1})
+      \end{align}
+      $$
+
+      又因为$\sum_1^{k} \lambda_i + \lambda_{k+1} = 1$
+
+      再使用一次 Jensen 不等式，得到
+
+      $$
+      \begin{align}
+         \sum_1^k \lambda_i f(\frac{\lambda_i}{\sum_1^k \lambda_i} x_i) + \lambda_{k+1} f(x_{k+1})
+         \leq f(\sum_1^k \lambda_i \frac{\lambda_i}{\sum_1^k \lambda_i} x_i + \lambda_{k+1} x_{k+1}) =
+         f(\sum_1^{k+1} \lambda_i x_i)
+      \end{align}
+      $$
+
+      = 当某一个$\lambda_i = 1$ 或者$\frac{\lambda_i}{\sum_1^k \lambda_i} x_i = x_{k+1}$相等时取等号
+
+   **分析取等号条件**：
+   当所有$x_i,i \leq k$相等，且$\frac{\lambda_i}{\sum_1^k \lambda_i} x_i = x_{k+1}$时取等号，可得所有的$x_i, i \leq k+1$相等时，取等号。
 
 3. $\log x$是上凸函数,$E[\log x] \leq \log E[x]$
 
@@ -195,13 +250,13 @@ $$
 
     $proof$:
 
-    $$
-        -D(P\|Q) = \sum_x p(x) \log \frac{q(x)}{p(x)} \leq^{\text{Jensen Inequality}}
-         \log \sum_x p(x)  \frac{q(x)}{p(x)} =
-         \log \sum_x q(x) = 0
-    $$
+$$
+-D(P\|Q) = \sum_x p(x) \log \frac{q(x)}{p(x)} \leq^{\text{Jensen Inequality}}
+\log \sum_x p(x)  \frac{q(x)}{p(x)} =
+\log \sum_x q(x) = 0
+$$
 
-    根据 Jensen 不等式的取等号条件，= iff $\frac{q(x)}{p(x)}$对所有$x$的均相等, 又因为概率归一，所以所有的$q(x) = p(x)$
+根据 Jensen 不等式的取等号条件，= iff $\frac{q(x)}{p(x)}$对所有$x$的均相等, 又因为概率归一，所以所有的$q(x) = p(x)$
 
 #### Basic Properties
 
