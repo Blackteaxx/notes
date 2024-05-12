@@ -92,7 +92,9 @@ $$
 
 #### (离散)信息熵
 
-定义为一个样本空间上所有随机事件（随机变量是离散的）的自信息的期望
+定义为一个样本空间上所有随机事件（随机变量是离散的）的自信息的期望，熵在物理意义上是平均意义下对随机事件不确定性/信息量的度量，计算机意义上是**平均意义上对随机变量的编码长度**。
+
+_Example：投掷均匀硬币的信息熵为 1bit，即可以使用一位编码表示所有结果_
 
 $$
 H(X) = E_X[I(X)] = - \sum_i^n p(x_i) \log p(x_i) \\
@@ -104,8 +106,8 @@ $$
 
 $$
 L(p, \lambda) = \sum_i^n p(x_i) \log p(x_i) + \lambda - \lambda\sum_i^n p(x_i) \\
-\frac{\partial L}{\partial p(x_i)} =  \log p(x_i) + \frac{1}{\ln 2} - \lambda = 0 \rArr \lambda
-= \log p(x_i) + \frac{1}{\ln 2}
+\frac{\partial L}{\partial p(x_i)} =  \log p(x_i) + \frac{1}{\ln 2} - \lambda = 0
+\rArr \lambda = \log p(x_i) + \frac{1}{\ln 2}
 $$
 
 对所有取值依次求偏导，发现 H(X)最大值(拉格朗日里的最小值)在均匀分布时取到。
