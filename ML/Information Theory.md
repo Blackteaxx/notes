@@ -2,7 +2,7 @@
 Title: Information Theory
 ---
 
-## Information Theory
+## Entropy
 
 ### Topic 1: 定义在事件上的函数
 
@@ -62,7 +62,7 @@ $$
 同理
 
 $$
-I(y) =  I(y|x) + I(x)
+I(x,y) =  I(y|x) + I(x)
 $$
 
 #### 互信息
@@ -131,19 +131,13 @@ differential entropy 可以为负数，同时在均值和方差的连续分布�
 一个事件发生时，X 分布的信息量期望
 
 $$
-
-H(X|y) = -\sum_x p(x|y) \log p(x|y)
-
-
+H(X|y) = \mathbb{E}_{p(x|y)}[I(x | y)]=-\sum_x p(x|y) \log p(x|y)
 $$
 
-Y 分布的事件发生时，X 分布的信息量的期望的期望，引申[全期望公式](https://zhuanlan.zhihu.com/p/417592820)
+**Y 分布的事件发生时，X 分布的信息量的期望的期望**，引申[全期望公式](https://zhuanlan.zhihu.com/p/417592820)
 
 $$
-
 H(X|Y) = \sum_y p(y) H(X|y) = -\sum_y \sum_x p(xy) \log p(x|y)
-
-
 $$
 
 与条件互信息相同，表示的是 Y 分布对 X 分布贡献之后的信息量，其差值可以用另外一个函数表示，定义在 Topic 3。
@@ -153,7 +147,7 @@ $$
 定义为两个概率分布的联合自信息的期望
 
 $$
-H(X,Y) = E[I(X,Y)] = - \sum_x \sum_y p(x,y) \log p(x,y)
+H(X,Y) = \mathbb{E}[I(X,Y)] = - \sum_x \sum_y p(x,y) \log p(x,y)
 $$
 
 #### Prior Knowledge
@@ -269,4 +263,42 @@ $$
 4. $H(X,Y) = H(X) + H(Y|X) = H(Y) + H(X|Y)$
 5. 离散熵的最大值取在均匀分布（证明见拉格朗日乘子法）
 6. $H(X)$严格上凸
-7. $H(Y|X) \leq H(Y)$
+7. ==$H(Y|X) \leq H(Y)$==，等号当且仅当 $X \perp Y$
+8. Chain Rule: ==$H(X_1, \dots, X_n) = \sum_i H(X_i | X_1, \dots, X_{i-1})$==
+9. 联合熵不大于各自熵之和：==$H(X_1, \dots, X_n) \leq \sum H(X_i)$==,使用 7 和 8 可证明，等号当且仅当 $X_i \perp X_j, \forall i \neq j$
+
+### Topic 3: Mutual Information
+
+#### 平均互信息
+
+集合$Y$ 与 事件 $x$ 的平均互信息定义为
+
+$$
+I(x;Y) = \mathbb{E}_{p(y|x)}[I(y)-I(y|x)] = \sum_y p(y|x) \log \frac{p(y|x)}{p(y)}
+$$
+
+平均互信息非负：$I(x;Y) = D(p(y|x) \| p(y)) \geq 0$
+
+集合$Y$ 与 集合 $X$ 的平均互信息定义为
+
+$$
+I(X;Y) = \mathbb{E}_{p(x)}[I(x;Y)] = \sum_x p(x) \sum_y p(y|x) \log \frac{p(y|x)}{p(y)} = \\
+\sum_x \sum_y p(x,y) \log \frac{p(x,y)}{p(x)p(y)}
+$$
+
+物理意义：$I(X;Y)$ 表示 $X$ 通过 $Y$ 获得的平均信息量
+
+**性质**：
+
+1. $I(X;Y) = I(Y;X) = H(X) - H(X|Y) = H(Y) - H(Y|X)$
+2. $I(X;Y) \geq 0$, because $I(x;Y) \geq 0$
+3. $I(X;Y) \leq H(X) / H(Y)$
+
+#### 平均条件互信息
+
+集合$Z$ 与 集合 $X$ 与 集合 $Y$ 的平均条件互信息定义为
+
+$$
+I(X;Y|Z) = \mathbb{E}_{p(z)}[I(X;Y|z)] = \\
+\sum_z p(z) \sum_x \sum_y p(x,y|z) \log \frac{p(x,y|z)}{p(x|z)p(y|z)}
+$$
