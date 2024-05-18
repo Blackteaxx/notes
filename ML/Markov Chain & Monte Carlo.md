@@ -66,7 +66,7 @@ print("integral = ", total / iters)
 
 假设我们有均匀分布的采样点$z \sim U(0,1)$，待采样的 pdf 为$p(x)$，cdf 为$F(x)$，那么我们可以通过$F^{-1}(z)$来获得采样点。
 
-于是$X = F^{-1}(Z)$，要证明采样后的$X$的分布为$p(x)$，我们可以通过计算$F^{'}(x) = P(X \leq x) = P(F^{-1}(Z) \leq x) = P(Z \leq F(x)) = \int_{0}^{F(x)} 1 \text{ d} t$ = F(x)，即$X$的 cdf 为$F(x)$，那么$X$的 pdf 为$p(x)$。
+于是$X = F^{-1}(Z)$，要证明采样后的$X$的分布为$p(x)$，我们可以通过计算$F^{'}(x) = P(X \leq x) = P(F^{-1}(Z) \leq x) = P(Z \leq F(x)) = \int_{0}^{F(x)} 1 \text{ d} t = F(x)$，即$X$的 cdf 为$F(x)$，那么$X$的 pdf 为$p(x)$。
 
 但是如果我们无法直接计算 cdf / cdf 的反函数，我们不能使用这种方法。
 

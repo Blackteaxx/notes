@@ -1,6 +1,53 @@
+<style>
+.title-box {
+    border-style: solid;
+    border-width: 1px;
+    padding: 16px;
+    padding-bottom: 32px;
+}
+</style>
+
+<div class="title-box">
+    <div>
+        <b style="float: left;">高级机器学习</b>
+        <b style="float: right;">人工智能学院</b>
+    </div>
+    <h1 style="text-align: center;">Homework 2</h1>
+    <div>
+        <span style="float: left;"><i>Instructor:</i> 詹德川</span>
+        <span style="float: right;"><i>Name:</i> 胡涂, <i>StudentId:</i> 211820073</span>
+    </div>
+</div>
+
 ## 一、VC 维
 
 ![img](https://img2023.cnblogs.com/blog/3436855/202405/3436855-20240514225608243-238689337.png)
+
+### Problem 1.1
+
+令$h_{x \in A}(x) = 1$，其他情况$h(x) = -1$
+
+对于三点集，我们可以假设满足如下情况
+
+![img](https://img2023.cnblogs.com/blog/3436855/202405/3436855-20240519003103024-1665177927.png)
+
+不难得出，所有的标记情况都能被实现对分，因此 VC 维至少为 3
+
+如果我们选择 4 个点，它们构成一个凸四边形，那么无论我们如何画一个平行于坐标轴的矩形，这个矩形不能覆盖对角线上的两个点。
+
+对于一个凹四边形，无论如何无法覆盖某一邻边上的两个点。
+
+因此，VC 维为 3
+
+### Problem 1.2
+
+考虑任意数量的点集,$(x_1, \dots, x_n)$，我们证明需要存在一个 1-近邻分类器，使得对于任意的标记集合$(y_1, \dots, y_n)$，都能被实现。
+
+因此，只需要构造一个 1-近邻分类器，使得$\forall x_i, \text{n}(x_i) \to y_i$。
+
+我们可以通过调整点的位置，使得每个点的最近邻就是它自己。这对于任意数量的点集都是成立的，所以对于任意数量的点集，我们都可以找到一个最近邻分类器使得其分类结果与预期一致。因此，最近邻分类器的假设空间可以对任意数量的点集进行打散。
+
+所以，最近邻分类器的 VC 维为无穷大。
 
 ## 二、图半监督学习
 
@@ -32,7 +79,7 @@ p(x) = \sum_{k=1}^{K} p(z = k) p(x|z = k)
 $$
 
 使用概率图模型可以表示为：
-![img](https://img2023.cnblogs.com/blog/3436855/202405/3436855-20240514182740936-1328244998.png)
+![img](https://img2023.cnblogs.com/blog/3436855/202405/3436855-20240518221833729-1623545420.png)
 
 ### Problem 3.2
 
@@ -82,7 +129,7 @@ $$
 ==那么，对于$\pi^{t+1}$==，
 
 $$
-\pi^{t+1} = \argmax_{\pi}  \sum_{i=1}^N \sum_{k = 1}^K p(z=k|x_i;\theta^t)\log \pi_{k}
+\pi^{t+1} = \arg \max_{\pi}  \sum_{i=1}^N \sum_{k = 1}^K p(z=k|x_i;\theta^t)\log \pi_{k}
 $$
 
 由于$\sum_{k=1}^K \pi_k = 1$，可以使用拉格朗日乘子法求解，即
@@ -107,13 +154,13 @@ $$
 ==对于$\mu^{t+1}$==，
 
 $$
-\mu^{t+1} = \argmax_{\mu} \sum_{i=1}^N \sum_{k = 1}^K p(z=k|x_i;\theta^t) \log \mathcal{N}(x_i|\mu_{k}, \Sigma)
+\mu^{t+1} = \arg \max_{\mu} \sum_{i=1}^N \sum_{k = 1}^K p(z=k|x_i;\theta^t) \log \mathcal{N}(x_i|\mu_{k}, \Sigma)
 $$
 
 由于$\mu$各分量之间无关，因此可以分别求解
 
 $$
-\mu_k^{t+1} = \argmax_{\mu_k} \sum_{i=1}^N p(z=k|x_i;\theta^t) \log \mathcal{N}(x_i|\mu_{k}, \Sigma) = \\
+\mu_k^{t+1} = \arg \max_{\mu_k} \sum_{i=1}^N p(z=k|x_i;\theta^t) \log \mathcal{N}(x_i|\mu_{k}, \Sigma) = \\
 \argmax_{\mu_k} \sum_{i=1}^N p(z=k|x_i;\theta^t) \left( -\frac{d}{2} \log 2\pi - \frac{1}{2} \log |\Sigma| - \frac{1}{2}(x_i - \mu_k)^T \Sigma^{-1} (x_i - \mu_k) \right)
 $$
 
@@ -130,7 +177,7 @@ $$
 ==对于$\Sigma^{t+1}$==，
 
 $$
-\Sigma^{t+1} = \argmax_{\Sigma} \sum_{i=1}^N \sum_{k = 1}^K p(z=k|x_i;\theta^t) \log \mathcal{N}(x_i|\mu_{k}, \Sigma)
+\Sigma^{t+1} = \arg \max_{\Sigma} \sum_{i=1}^N \sum_{k = 1}^K p(z=k|x_i;\theta^t) \log \mathcal{N}(x_i|\mu_{k}, \Sigma)
 $$
 
 对$\Sigma$求导，令导数为 0，即
