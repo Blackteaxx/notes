@@ -1,0 +1,8 @@
+code/data/*
+
+code/data/archive.zip
+code/data/cifar-100-python.tar.gz
+code/data/cifar-100-python/file.txt~
+code/data/cifar-100-python/meta
+code/data/cifar-100-python/test
+code/data/cifar-100-python/train

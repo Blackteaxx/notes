@@ -204,7 +204,7 @@ $$
 在 GMM 中，我们定义$p(x,z;\theta)$
 
 $$
-p(x,z;\theta) = \prod_{i=1}^N p(x_i,z_i;\theta_k) = \prod_{i=1}^N p(z_i) p(x_i|z_i) = \prod_{i=1}^N \pi_{z_i} \mathcal{N}(x_i|\mu_{z_i}, \Sigma)
+p(x,z=(\dots);\theta) = \prod_{i=1}^N p(x_i,z_i;\theta_k) = \prod_{i=1}^N p(z_i) p(x_i|z_i) = \prod_{i=1}^N \pi_{z_i} \mathcal{N}(x_i|\mu_{z_i}, \Sigma)
 $$
 
 定义$p(z|x;\theta)$
@@ -221,7 +221,7 @@ E-step:
 
 $$
 \mathbb{E}_{p(z|x;\theta^t)}[\log p(x,z;\theta)] =
-\sum_{k=1}^K p(z=k|x;\theta^t) \log p(x,z=k;\theta) = \\
+\sum_{k} p(z=k|x;\theta^t) \log p(x,z=k;\theta) = \\
 \sum_{z_1 = 1}^K \cdots \sum_{z_N = 1}^K \prod_{i=1}^N p(z_i|x_i;\theta^t) (\log \prod_{i=1}^N \pi_{z_i} \mathcal{N}(x_i|\mu_{z_i}, \Sigma)) = \\
 \sum_{z_1 = 1}^K \cdots \sum_{z_N = 1}^K \prod_{i=1}^N p(z_i|x_i;\theta^t)  \sum_{i=1}^N (\log \pi_{z_i} +  \log \mathcal{N}(x_i|\mu_{z_i}, \Sigma)) = \\
 \sum_{i=1}^N \sum_{z_1 = 1}^K \cdots \sum_{z_N = 1}^K \prod_{i=1}^N p(z_i|x_i;\theta^t)(\log \pi_{z_i} +  \log \mathcal{N}(x_i|\mu_{z_i}, \Sigma)) = \\

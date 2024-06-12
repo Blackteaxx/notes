@@ -78,8 +78,12 @@ $$
 p(x) = \sum_{k=1}^{K} p(z = k) p(x|z = k)
 $$
 
+$$
+p(x, z = (z_1, z_2, \dots, z_k)) = \prod_{i=1}^N p(x_i, z_i) = \prod_{i=1}^N p(z_i) p(x_i|z_i)
+$$
+
 使用概率图模型可以表示为：
-![img](https://img2023.cnblogs.com/blog/3436855/202405/3436855-20240518221833729-1623545420.png)
+![img](https://img2023.cnblogs.com/blog/3436855/202405/3436855-20240521155942050-875987345.png)
 
 ### Problem 3.2
 
@@ -93,7 +97,7 @@ EM 算法的步骤为：
 在 GMM 中，我们定义$p(x,z;\theta)$
 
 $$
-p(x,z;\theta) = \prod_{i=1}^N p(x_i,z_i;\theta_k) = \prod_{i=1}^N p(z_i) p(x_i|z_i) = \prod_{i=1}^N \pi_{z_i} \mathcal{N}(x_i|\mu_{z_i}, \Sigma)
+p(x,z=(\dots);\theta) = \prod_{i=1}^N p(x_i,z_i;\theta_k) = \prod_{i=1}^N p(z_i) p(x_i|z_i) = \prod_{i=1}^N \pi_{z_i} \mathcal{N}(x_i|\mu_{z_i}, \Sigma)
 $$
 
 定义$p(z|x;\theta)$
@@ -110,18 +114,18 @@ E-step:
 
 $$
 \mathbb{E}_{p(z|x;\theta^t)}[\log p(x,z;\theta)] =
-\sum_{k=1}^K p(z=k|x;\theta^t) \log p(x,z=k;\theta) = \\
+\sum_{k} p(z=k|x;\theta^t) \log p(x,z=k;\theta) = \\
 \sum_{z_1 = 1}^K \cdots \sum_{z_N = 1}^K \prod_{i=1}^N p(z_i|x_i;\theta^t) (\log \prod_{i=1}^N \pi_{z_i} \mathcal{N}(x_i|\mu_{z_i}, \Sigma)) = \\
 \sum_{z_1 = 1}^K \cdots \sum_{z_N = 1}^K \prod_{i=1}^N p(z_i|x_i;\theta^t)  \sum_{i=1}^N (\log \pi_{z_i} +  \log \mathcal{N}(x_i|\mu_{z_i}, \Sigma)) = \\
 \sum_{i=1}^N \sum_{z_1 = 1}^K \cdots \sum_{z_N = 1}^K \prod_{i=1}^N p(z_i|x_i;\theta^t)(\log \pi_{z_i} +  \log \mathcal{N}(x_i|\mu_{z_i}, \Sigma)) = \\
-\sum_{i=1}^N \sum_{k = 1}^K p(z=k|x_i;\theta^t)(\log \pi_{k} +  \log \mathcal{N}(x_i|\mu_{k}, \Sigma))
+\sum_{i=1}^N \sum_{k = 1}^K p(z_i=k|x_i;\theta^t)(\log \pi_{k} +  \log \mathcal{N}(x_i|\mu_{k}, \Sigma))
 $$
 
 M-step:
 
 $$
 (\pi^{t+1}, \mu^{t+1}, \Sigma^{t+1}) = \\ \arg \max_{\pi, \mu, \Sigma} \sum_{i=1}^N \sum_{k = 1}^K p(z=k|x_i;\theta^t)(\log \pi_{k} +  \log \mathcal{N}(x_i|\mu_{k}, \Sigma)) \iff \\
-\arg \max_{\pi, \mu, \Sigma} \sum_{i=1}^N \sum_{k = 1}^K p(z=k|x_i;\theta^t)\log \pi_{k} + \sum_{i=1}^N \sum_{k = 1}^K p(z=k|x_i;\theta^t) \log \mathcal{N}(x_i|\mu_{k}, \Sigma)
+\arg \max_{\pi, \mu, \Sigma} \sum_{i=1}^N \sum_{k = 1}^K p(z_i=k|x_i;\theta^t)\log \pi_{k} + \sum_{i=1}^N \sum_{k = 1}^K p(z_i=k|x_i;\theta^t) \log \mathcal{N}(x_i|\mu_{k}, \Sigma)
 $$
 
 ---

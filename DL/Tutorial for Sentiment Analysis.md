@@ -10,7 +10,7 @@ Mark: 之前没有用 torch 做过 NLP，因此相当于一个 tutorial
 
 1. 文本分词
 
-NLP 需要将文本数据分词并转换为词汇表中的 id，这里使用`transformers`库中的`BertTokenizer`进行处理。
+NLP 需要将文本数据分词并转换为词汇表中的 id，这样**构造出 embedding 层的输入**，这里使用`transformers`库中的`BertTokenizer`进行处理。
 
 2. 创建词汇表
 
