@@ -1,3 +1,24 @@
+<style>
+.title-box {
+    border-style: solid;
+    border-width: 1px;
+    padding: 16px;
+    padding-bottom: 32px;
+}
+</style>
+
+<div class="title-box">
+    <div>
+        <b style="float: left;">高级机器学习</b>
+        <b style="float: right;">人工智能学院</b>
+    </div>
+    <h1 style="text-align: center;">Homework 3</h1>
+    <div>
+        <span style="float: left;"><i>Instructor:</i> 詹德川</span>
+        <span style="float: right;"><i>Name:</i> 胡涂, <i>StudentId:</i> 211820073</span>
+    </div>
+</div>
+
 ## 1. 完成 value_iteration 函数, 实现值迭代算法
 
 根据 Bellman 最优方程，我们可以得到如下的公式：

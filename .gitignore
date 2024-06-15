@@ -6,3 +6,5 @@ code/data/cifar-100-python/file.txt~
 code/data/cifar-100-python/meta
 code/data/cifar-100-python/test
 code/data/cifar-100-python/train
+
+*.pyc
