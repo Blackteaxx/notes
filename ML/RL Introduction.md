@@ -49,30 +49,25 @@ $$
 
 ## Value Iteration
 
+根据 Bellman 最优方程，我们可以得到如下的公式：
+
+$$
+V^*(s) = \max_a \sum_{s'} T(s, a, s') [R(s, a, s') + \gamma V^*(s')] = \max_a Q^*(s, a)
+$$
+
+可以将其写成迭代更新的方式
+
 $$
 V_{k+1}(s) = \max_a \sum_{s'} T(s, a, s') [R(s, a, s') + \gamma V_k(s')] = \max_a Q_k(s, a)
 $$
 
-依据如上的等式，在一次迭代的时候遍历所有的状态，找出每一个状态对应的最大估计 Q 值，然后更新 V 值，直到收敛。
+依据如上的等式，在一次迭代的时候遍历所有的状态，找出每一个状态对应的最大估计 Q 值，然后更新 V 值，直到收敛。最终的不动点对应着最优的 V 值。
 
 ```python
 def value_iteration(env:GridWorld, gamma=0.9, theta=1e-6):
     """
     Value iteration algorithm for solving a given environment.
-
-    Parameters:
-    env: GridWorld
-        An instance of the environment, which includes the state space, action space, rewards, and transition dynamics.
-
-    gamma: float, optional, default=0.9
-        The discount factor. It balances the importance of immediate rewards versus future rewards, ranging from 0 to 1. A higher gamma value makes the agent focus more on long-term rewards.
-
-    theta: float, optional, default=1e-6
-        The convergence threshold. It determines the stopping criterion for the value iteration algorithm. The algorithm stops when the maximum change in the value function is less than theta.
-
-    Returns:
-    policy: numpy.ndarray
-        A policy matrix of shape (env.size, env.size), storing the optimal action for each state.
+    ...
     """
     # initialize the value function and policy
     V = np.zeros((env.size, env.size))
@@ -124,13 +119,36 @@ def value_iteration(env:GridWorld, gamma=0.9, theta=1e-6):
     return policy
 ```
 
+最终结果如下
+
+```
+Value-iteration converged at iteration# 154.
+↓ → ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓
+↓ ↓ → ↓ ↓ ↓ ↓ ↓ ↓ ↓
+↓ ↓ ↓ → ↓ ↓ ↓ ↓ ↓ ↓
+↓ ↓ ↓ ↓ → ↓ ↓ ↓ ↓ ↓
+↓ ↓ ↓ ↓ ↓ → ↓ ↓ ↓ ↓
+↓ ↓ ↓ ↓ ↓ ↓ → ↓ ↓ ↓
+↓ ↓ ↓ ↓ ↓ ↓ ↓ → ↓ ↓
+↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ → ↓
+↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓
+→ → → → → → → → → ↓
+
+========== SHOW PATH ==========
+(0, 0) -> (1, 0) -> (2, 0) -> (3, 0) -> (4, 0) ->
+(5, 0) -> (6, 0) -> (7, 0) -> (8, 0) -> (9, 0) ->
+(9, 1) -> (9, 2) -> (9, 3) -> (9, 4) -> (9, 5) ->
+(9, 6) -> (9, 7) -> (9, 8) -> (9, 9)
+========== END  PATH ==========
+```
+
 ## Policy Iteration
 
-从一个初始化的策略出发，先进行**策略评估**，然后**改进策略**，评估改进的策略，再进一步改进策略，经过不断迭代更新，直达策略收敛，这种算法被称为“策略迭代”
+从一个初始化的策略出发，先对当前的策略进行**策略评估**，然后**改进策略**，评估改进的策略，再进一步改进策略，经过不断迭代更新，直到**策略收敛**，这种算法被称为“策略迭代”
 
 - Policy Evaluation
 
-根据 Bellman 期望方程得出迭代式
+根据 Bellman 期望方程，我们可以得到如下的公式：
 
 $$
 V_{k+1}(s) = \sum_{a} \pi(a|s) \sum_{s'} T(s, a, s') [R(s, a, s') + \gamma V_k(s')]
@@ -144,48 +162,37 @@ $$
 def policy_evaluation(policy:np.ndarray, env:GridWorld, gamma=0.9, theta=1e-6):
     """
     Evaluate a policy given an environment.
-
-    Parameters:
-    policy: numpy.ndarray
-        A matrix representing the policy. Each entry contains an action to take at that state.
-
-    env: ComplexGridWorld
-        An instance of the environment, which includes the state space, action space, rewards, and transition dynamics.
-
-    gamma: float, optional, default=0.9
-        The discount factor. It balances the importance of immediate rewards versus future rewards, ranging from 0 to 1.
-
-    theta: float, optional, default=1e-6
-        A threshold for the evaluation's convergence. When the change in value function is less than theta for all states, the evaluation stops.
-
-    Returns:
-    V: numpy.ndarray
-        A value function representing the expected return for each state under the given policy.
+    ...
     """
     V = np.zeros((env.size, env.size))
     ####
     # Implement the policy evaluation algorithm here
 
+    iterations = 0
+
     while True:
 
-            updated_V = V.copy()
+        iterations += 1
 
-            for now_state_x in range(env.size):
-                for now_state_y in range(env.size):
+        updated_V = V.copy()
 
-                    env.state = (now_state_x, now_state_y)
+        for now_state_x in range(env.size):
+            for now_state_y in range(env.size):
 
-                    action = policy[now_state_x, now_state_y]
+                env.state = (now_state_x, now_state_y)
 
-                    next_state, reward = env.step(action=action)
+                action = policy[now_state_x, now_state_y]
 
-                    updated_V[now_state_x, now_state_y] = reward + gamma * V[next_state[0], next_state[1]]
+                next_state, reward = env.step(action=action)
 
-            if np.amax(np.fabs(updated_V - V)) <= theta:
-                V = updated_V
-                break
-            else:
-                V = updated_V
+                updated_V[now_state_x, now_state_y] = reward + gamma * V[next_state[0], next_state[1]]
+
+        if np.amax(np.fabs(updated_V - V)) <= theta:
+            V = updated_V
+            print ('Policy-evaluation converged at iteration# %d.' %(iterations))
+            break
+        else:
+            V = updated_V
 
     ####
 
@@ -194,7 +201,7 @@ def policy_evaluation(policy:np.ndarray, env:GridWorld, gamma=0.9, theta=1e-6):
 
 - Policy Improvement
 
-假设我们在原来的状态价值函数的基础上，对于每一个状态，我们能够找到一个更优的动作$a$, 使得$Q^\pi (s, a) \geq V^\pi(s)$，那么能够获得更高的汇报
+假设我们在原来的状态价值函数的基础上，对于每一个状态，我们能够找到一个更优的动作$a$, 使得$Q^\pi (s, a) \geq V^\pi(s)$，那么能够获得更高的回报
 
 现在如果我们能够找到一个新的策略$\pi'$，使得$V^{\pi'}(s) \geq V^\pi(s)$，那么我们就可以得到一个更好的策略
 
@@ -208,27 +215,18 @@ $$
 def policy_iteration(env:GridWorld, gamma=0.9, theta=1e-6):
     """
     Perform policy iteration to find the optimal policy for a given environment.
-
-    Parameters:
-    env: ComplexGridWorld
-        An instance of the environment, which includes the state space, action space, rewards, and transition dynamics.
-
-    gamma: float, optional, default=0.9
-        The discount factor. It balances the importance of immediate rewards versus future rewards, ranging from 0 to 1.
-
-    theta: float, optional, default=1e-6
-        A threshold for the evaluation's convergence. When the change in value function is less than theta for all states, the evaluation stops.
-
-    Returns:
-    policy: numpy.ndarray
-        A matrix representing the optimal policy. Each entry contains the best action to take at that state.
+    ...
     """
     policy = np.zeros((env.size, env.size), dtype=int)
 
     ####
     # Implement the policy iteration algorithm here
 
+    iterations = 0
+
     while True:
+
+        iterations += 1
 
         V = policy_evaluation(policy=policy, env=env)
 
@@ -264,11 +262,54 @@ def policy_iteration(env:GridWorld, gamma=0.9, theta=1e-6):
                     policy[now_state_x, now_state_y] = Q_values.index(max_Q)
 
         if policy_stable:
+            print ('Policy-iteration converged at iteration# %d.' %(iterations))
             break
 
     ####
     env.reset()
     return policy
+```
+
+最终结果如下
+
+```
+Policy-evaluation converged at iteration# 133.
+Policy-evaluation converged at iteration# 154.
+Policy-evaluation converged at iteration# 154.
+Policy-evaluation converged at iteration# 154.
+Policy-evaluation converged at iteration# 154.
+Policy-evaluation converged at iteration# 154.
+Policy-evaluation converged at iteration# 154.
+Policy-evaluation converged at iteration# 154.
+Policy-evaluation converged at iteration# 154.
+Policy-evaluation converged at iteration# 154.
+Policy-evaluation converged at iteration# 154.
+Policy-evaluation converged at iteration# 154.
+Policy-evaluation converged at iteration# 154.
+Policy-evaluation converged at iteration# 154.
+Policy-evaluation converged at iteration# 154.
+Policy-evaluation converged at iteration# 154.
+Policy-evaluation converged at iteration# 154.
+Policy-evaluation converged at iteration# 154.
+Policy-evaluation converged at iteration# 154.
+Policy-iteration converged at iteration# 19.
+↓ → ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓
+↓ ↓ → ↓ ↓ ↓ ↓ ↓ ↓ ↓
+↓ ↓ ↓ → ↓ ↓ ↓ ↓ ↓ ↓
+↓ ↓ ↓ ↓ → ↓ ↓ ↓ ↓ ↓
+↓ ↓ ↓ ↓ ↓ → ↓ ↓ ↓ ↓
+↓ ↓ ↓ ↓ ↓ ↓ → ↓ ↓ ↓
+↓ ↓ ↓ ↓ ↓ ↓ ↓ → ↓ ↓
+↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ → ↓
+↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓ ↓
+→ → → → → → → → → ↓
+
+========== SHOW PATH ==========
+(0, 0) -> (1, 0) -> (2, 0) -> (3, 0) -> (4, 0) ->
+(5, 0) -> (6, 0) -> (7, 0) -> (8, 0) -> (9, 0) ->
+(9, 1) -> (9, 2) -> (9, 3) -> (9, 4) -> (9, 5) ->
+(9, 6) -> (9, 7) -> (9, 8) -> (9, 9)
+========== END  PATH ==========
 ```
 
 ## State-Action-Reward-State-Action (SARSA)
@@ -283,9 +324,9 @@ $$
 
 那么左右两边都是可以计算的，并且都是对 Q 值的估计，我们可以通过不断的迭代来更新这个表格
 
-即使用观测到的$r_t$, $s_{t+1}$ 以及抽样的出的$a_{t+1}$，得到$r_t + \gamma q(s_{t+1}, a_{t+1})$
+即使用观测到的$r_t$, $s_{t+1}$ 以及通过最优策略抽样的出的$a_{t+1}$，得到$r_t + \gamma q(s_{t+1}, a_{t+1})$
 
-采用 TD 的思想，将$q(s_t, a_t) = (1-\alpha) q(s_t, a_t) + \alpha r_t + \gamma q(s_{t+1}, a_{t+1})$
+采用 TD 的思想，将$q(s_t, a_t) = (1-\alpha) q(s_t, a_t) + \alpha r_t + \alpha\gamma q(s_{t+1}, a_{t+1})$
 
 SARSA 用到了五元组$(s_t, a_t, r_t, s_{t+1}, a_{t+1})$，因此我们可以通过不断的迭代来更新这个表格
 
@@ -299,29 +340,25 @@ a = \begin{cases}
 $$
 
 ```python
+def extract_policy(q_table):
+    """
+    Extract the optimal policy from the Q-value table.
+    ...
+    """
+
+    ####
+    # Implement the function to extract the optimal policy from the Q-value table
+
+    policy = np.argmax(q_table, axis=2)
+
+    ####
+
+    return policy
+
 def sarsa(env:GridWorld, episodes=1000, alpha=0.1, gamma=0.9, epsilon=0.1):
     """
     SARSA algorithm for training an agent in a given environment.
-
-    Parameters:
-    env: ComplexGridWorld
-        An instance of the environment, which includes the state space, action space, rewards, and transition dynamics.
-
-    episodes: int, optional, default=1000
-        The number of episodes for training. In each episode, the agent starts from the initial state and interacts with the environment until it reaches the goal or the episode terminates.
-
-    alpha: float, optional, default=0.1
-        The learning rate. It determines the step size for updating the Q-values, ranging from 0 to 1. A higher alpha value means faster learning but may lead to instability.
-
-    gamma: float, optional, default=0.9
-        The discount factor. It balances the importance of immediate rewards versus future rewards, ranging from 0 to 1. A higher gamma value makes the agent focus more on long-term rewards.
-
-    epsilon: float, optional, default=0.1
-        The exploration rate. It determines the probability of the agent taking a random action, used to balance exploration and exploitation. A higher epsilon value makes the agent explore more.
-
-    Returns:
-    q_table: numpy.ndarray
-        A Q-value table of shape (env.size, env.size, 4), storing the Q-values for each state-action pair.
+    ...
     """
     q_table = np.zeros((env.size, env.size, 4))
 
@@ -329,6 +366,8 @@ def sarsa(env:GridWorld, episodes=1000, alpha=0.1, gamma=0.9, epsilon=0.1):
     # Implement the SARSA algorithm here
 
     import random
+
+    return_list = []
 
     for _ in range(episodes):
 
@@ -339,11 +378,15 @@ def sarsa(env:GridWorld, episodes=1000, alpha=0.1, gamma=0.9, epsilon=0.1):
         if random.uniform(0, 1) <= epsilon:
                 action = random.randint(0, 3)
 
+        episode_return = 0
+
         while True:
             policy = extract_policy(q_table=q_table)
 
             env.state = (x, y)
             new_state, reward = env.step(action=action)
+
+            episode_return += reward
 
             new_action = policy[new_state[0], new_state[1]]
 
@@ -358,10 +401,42 @@ def sarsa(env:GridWorld, episodes=1000, alpha=0.1, gamma=0.9, epsilon=0.1):
             if new_state == (9, 9):
                 break
 
+        return_list.append(episode_return)
     ####
+
+    # plot the return
+    import matplotlib.pyplot as plt
+    plt.scatter(range(episodes), return_list)
+    plt.xlabel('Episodes')
+    plt.ylabel('Returns')
+    plt.show()
 
     env.reset()
     return q_table
+```
+
+最终实验结果如下
+
+![img](https://img2023.cnblogs.com/blog/3436855/202406/3436855-20240611004049925-1468348599.png)
+
+```
+↓ → ↓ ↓ → → → ↓ ↓ ←
+↓ ↑ → → ↓ ↓ → ↓ ↓ ↓
+→ ↓ ↑ → → → ↓ → ↓ ↓
+↓ ↓ ↓ ↑ → → ↓ → ↓ ↓
+↓ ↓ ↓ ↓ ↑ → → → → ↓
+→ ↓ ↓ ↓ ↓ ↑ → → → ↓
+→ → → ↓ ↓ ↓ ↑ → → ↓
+→ → → → ↓ ↓ ↓ ↑ → ↓
+→ → → → ↓ → ↓ ↓ ↑ ↓
+→ → → → → → → → → ↑
+
+========== SHOW PATH ==========
+(0, 0) -> (1, 0) -> (2, 0) -> (2, 1) -> (3, 1) ->
+(4, 1) -> (5, 1) -> (6, 1) -> (6, 2) -> (6, 3) ->
+(7, 3) -> (7, 4) -> (8, 4) -> (9, 4) -> (9, 5) ->
+(9, 6) -> (9, 7) -> (9, 8) -> (9, 9)
+========== END  PATH ==========
 ```
 
 ## Q-Learning
@@ -371,40 +446,31 @@ Q-Learning 是一种无模型的学习方法，它不需要环境的转移概率
 基于 TD 的思想，我们可以通过不断的迭代来更新 Q 值
 
 $$
-Q^*(s_t, a_t) = \sum_{s'} T(s, a, s') [R(s, a, s') + \gamma \max_{a'} Q^*(s', a')]
+Q^*(s_t, a_t) = \mathbb{E}[r_t + \gamma \max_{a'} Q^*(s_{t+1}, a') | S_t = s_t, A_t = a_t]
 $$
+
+$$
+Q(s_t, a_t) = (1-\alpha) Q(s_t, a_t) + \alpha [r_t + \gamma \max_{a'} Q(s_{t+1}, a')]
+$$
+
+与 SARSA 类似，我们先通过$\epsilon$-greedy 策略抽样，然后更新 Q 值
 
 ```python
 def q_learning(env:GridWorld, episodes=1000, alpha=0.1, gamma=0.9, epsilon=0.1):
     """
     Q-learning algorithm for training an agent in a given environment.
-
-    Parameters:
-    env: ComplexGridWorld
-        An instance of the environment, which includes the state space, action space, rewards, and transition dynamics.
-
-    episodes: int, optional, default=1000
-        The number of episodes for training. In each episode, the agent starts from the initial state and interacts with the environment until it reaches the goal or the episode terminates.
-
-    alpha: float, optional, default=0.1
-        The learning rate. It determines the step size for updating the Q-values, ranging from 0 to 1. A higher alpha value means faster learning but may lead to instability.
-
-    gamma: float, optional, default=0.9
-        The discount factor. It balances the importance of immediate rewards versus future rewards, ranging from 0 to 1. A higher gamma value makes the agent focus more on long-term rewards.
-
-    epsilon: float, optional, default=0.1
-        The exploration rate. It determines the probability of the agent taking a random action, used to balance exploration and exploitation. A higher epsilon value makes the agent explore more.
-
-    Returns:
-    q_table: numpy.ndarray
-        A Q-value table of shape (env.size, env.size, 4), storing the Q-values for each state-action pair.
+    ...
     """
     q_table = np.zeros((env.size, env.size, 4))
     ####
     # Implement the Q-learning algorithm here
 
+    return_list = []
+
     for _ in range(episodes):
         x, y = env.start
+
+        episode_return = 0
 
         while True:
             policy = extract_policy(q_table=q_table)
@@ -416,14 +482,49 @@ def q_learning(env:GridWorld, episodes=1000, alpha=0.1, gamma=0.9, epsilon=0.1):
             env.state = (x, y)
             new_state, reward = env.step(action=action)
 
-            q_table[x, y, action] += alpha * (reward + gamma * np.amax(q_table[new_state[0], new_state[1]]) - q_table[x, y, action])
+            episode_return += reward
+
+            q_table[x, y, action] += alpha * (reward + gamma *
+                                              np.amax(q_table[new_state[0], new_state[1]]) - q_table[x, y, action])
 
             x, y = new_state
 
             if new_state == env.goal:
                 break
+
+        return_list.append(episode_return)
     ####
+
+    import matplotlib.pyplot as plt
+    plt.scatter(range(episodes), return_list)
+    plt.xlabel('Episodes')
+    plt.ylabel('Returns')
+    plt.show()
 
     env.reset()
     return q_table
+```
+
+最终实验结果如下：
+
+![img](https://img2023.cnblogs.com/blog/3436855/202406/3436855-20240611004226315-1519415810.png)
+
+```
+→ → → → → ↓ ↓ → ↓ ↑
+↓ ↑ → → → ↓ ↓ ↓ ↓ ↓
+↓ ↓ ↑ → → → ↓ ↓ ↓ ↓
+↓ ↓ ↓ ↑ → → ↓ ↓ ↓ ↓
+↓ ↓ ↓ ↓ ↑ → → → ↓ ↓
+→ → → ↓ ↓ ↑ → → → ↓
+→ → → → ↓ ↓ ↑ → → ↓
+→ → → → ↓ ↓ ↓ ↑ → ↓
+↑ → → → ↓ ↓ ↓ ↓ ↑ ↓
+→ → → → → → → → → ↑
+
+========== SHOW PATH ==========
+(0, 0) -> (0, 1) -> (0, 2) -> (0, 3) -> (0, 4) ->
+(0, 5) -> (1, 5) -> (2, 5) -> (2, 6) -> (3, 6) ->
+(4, 6) -> (4, 7) -> (4, 8) -> (5, 8) -> (5, 9) ->
+(6, 9) -> (7, 9) -> (8, 9) -> (9, 9)
+========== END  PATH ==========
 ```
