@@ -8,3 +8,4 @@ code/data/cifar-100-python/test
 code/data/cifar-100-python/train
 
 *.pyc
+*.json

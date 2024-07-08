@@ -110,7 +110,9 @@ plt.show()
 
 #### 3. 重要性采样 (Importance Sampling)
 
-$\mathbb{E}\_{ p(z) }[f(z)] = \int p(z) f(z) \text{d}z = \int \frac{p(z)}{q(z)} q(z) f(z) \text{d} z \approx \frac{1}{N}\sum f(z_i) \frac{p(z_i)}{q(z_i)} $
+$$
+\mathbb{E}_{ p(z) }[f(z)] = \int p(z) f(z) \text{d}z = \int \frac{p(z)}{q(z)} q(z) f(z) \text{d} z \approx \frac{1}{N}\sum f(z_i) \frac{p(z_i)}{q(z_i)}
+$$
 
 严重依赖于 q 的选择，如果 q 选择不当，会导致采样的效率很低。
 
@@ -136,7 +138,7 @@ $t$时刻状态的$x$取值可以由$t-1$时刻的状态+转移概率求边缘�
 
 **平稳分布**：$\pi = \pi P$，其中$\pi$是一个行向量，$P$是转移矩阵，$\pi$是一个平稳分布，即$\pi = \pi P = \pi P^2 = \dots$，也可以表示为$\pi(i) = \sum_j \pi(j) p_{ji}$
 
-**Detailed balance condition**：$\pi(i) p_{ij} = \pi(j) p_{ji}$
+**细致平稳条件(Detailed balance condition)**：$\pi(i) p_{ij} = \pi(j) p_{ji}$
 
 $\text{Detailed balance condition} \Rightarrow \text{Balance Distribution}$
 
@@ -146,17 +148,21 @@ $$
 \sum_j \pi(j) p_{ji} = \sum_j \pi(i) p_{ij} =  \pi(i) \sum_j p_{ij} = \pi(i)
 $$
 
-假如我们能够构造一个马尔可夫链，使得其平稳分布为我们要求的分布，那么我们就可以通过马尔可夫链的采样来获得我们要求的分布。
+> End Proof
+
+假如我们能够构造一个马尔可夫链，使得**其平稳分布**为我们要求的分布，那么我们就可以通过马尔可夫链的采样来获得我们要求的分布。
 
 ## MH Algorithm
 
 主要思想：从一个 Markov Chain 中不断地采样，使得其平稳分布为我们要求的分布。
 
-我们需要构造转移矩阵，使得其平稳分布为我们要求的分布。但是不能直接构造出这样的矩阵，但是通过 detailed balance condition 可以构造平稳分布，因此我们先构造一个提议分布$Q(x^\star | x^{t-1})$，然后通过构造一个接受率来使得满足以下条件：
+我们需要构造转移矩阵，使得**其平稳分布为我们要求的分布**，即最终的$\pi/p(x)$为我们想要的。但是不能直接构造出这样的矩阵，但是通过 detailed balance condition 可以构造平稳分布，因此我们先构造一个提议分布$Q(x^\star | x^{t-1})$，然后通过构造一个接受率来使得满足以下条件：
 
 $$
-p(x^{t-1}) Q(x^\star | x^{t-1}) A(x^\star| x^{t-1}) = p(x^\star) Q(x^{t-1} | x^\star) A(x^{t-1} | x^\star)
+p(x^{t-1}) Q(x^\star | x^{t-1}) A(x^\star| x^{t-1}) \ ? \ p(x^\star) Q(x^{t-1} | x^\star) A(x^{t-1} | x^\star)
 $$
+
+可以发现，**前一项为转移到**$x^\star$的概率，后一项为转移到$x^{t-1}$的概率，因此我们可以通过构造一个接受率来使得其满足 detailed balance condition。
 
 如果我们定义接受率为$A(x^\star| x^{t-1}) =\min(1, \frac{p(x^\star) Q(x^{t-1} | x^\star)}{p(x^{t-1}) Q(x^\star | x^{t-1})}$) ，那么上述等式就可以满足 detailed balance condition。
 
@@ -178,4 +184,6 @@ $$
 
 那么根据拒绝采样的思想，我们可以通过一个简单的分布$q(x)$来近似$p(x)$，然后通过接受率来判断是否接受。
 
-**这里的接受率在算法当中是怎么计算出来的？**
+在实际采样中，要丢弃前若干个样本，因为初始状态可能不是平稳分布（可能被多次拒绝了！）。
+
+![img](https://img2023.cnblogs.com/blog/3436855/202406/3436855-20240625184632795-128153317.png)

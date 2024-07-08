@@ -5,27 +5,59 @@ drl
 
 ## MDP
 
-Markov Decision Process 是一个五元组$<S, A, T, R, \gamma>$
+Markov Decision Process 是一个五元组$<S, A, T, R, \gamma>$，是强化学习概念的起源，其中：
 
 - $S$ 是状态空间
 - $A$ 是动作空间
-- $T: S \times A \times S \to \mathbb{R}$ 是状态转移概率，$T(s, a, s')$ 表示在状态$s$下采取动作$a$转移到状态$s'$的概率
-- $R: S \times A \times S \to \mathbb{R}$ 是奖励函数，$R(s, a, s')$ 表示在状态$s$下采取动作$a$转移到状态$s'$的奖励
+- $T: S \times A \times S \to \mathbb{R}$ 是状态转移概率，$T(s, a, s')$ 表示在状态$s$下采取动作$a$转移到状态$s'$的概率，即$P(s' | s, a)$
+- $R: S \times A \times S \to \mathbb{R}$ 是奖励函数，$R(s, a, s')$ 表示在状态$s$下采取动作$a$转移到状态$s'$的奖励，强化学习的性能取决于奖励的设定
 - $\gamma$ 是折扣因子，用于平衡当前奖励和未来奖励的重要性
 
-MDP 的目标是找到一个策略$\pi: S \to A$，使得在这个策略下，能够最大化期望回报（Return），注意，是一个随机过程，因此我们需要考虑期望回报
+MDP 的目标是找到一个策略$\pi: S \to A$，策略**可以是确定或随机**的，一般随机（即$\pi(a | s)$），使得在这个策略下，能够最大化期望回报（Return），注意，是一个随机过程，因此我们需要考虑期望回报
 
-Bellman Equation:
-
-$$
-Q(s, a) = E[R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \dots | S_t = s, A_t = a] = \sum_{s'} T(s, a, s') [R(s, a, s') + \gamma V(s')]
-$$
+我们在与环境交互的过程中，会获得一系列的状态、动作、奖励的序列，我们可以得到轨迹 trajectory
 
 $$
-V(s) = E[U_t|S_t = s] = \sum_{a} \pi(a|s) \sum_{s'} T(s, a, s') [R(s, a, s') + \gamma V(s')]
+s_1, a_1, r_1, s_2, a_2, r_2, \dots, s_T
 $$
 
-Bellman Optimality Equation:
+我们考虑效用函数，以$\gamma$为贴现率，定义 t 时刻的回报
+
+$$
+U_t = R_{t+1} + \gamma R_{t+2} + \dots = \sum_{k=0}^{\infty} \gamma^k R_{t+k} = R_{t+1} + \gamma U_{t+1}
+$$
+
+我们发现$U_t$实际上是一个随机变量，因为$t$时刻之后的奖励$R_t$是未知的，它依赖于$s_{t}, a, s_{t+1}$, 即$R(s, a, s')$
+
+那么为了评估当前的形势，我们需要考虑期望回报，有固定的策略$\pi$，我们可以得到**动作价值函数**
+
+$$
+Q_\pi(s, a) = \mathbb{E}[U_t | S_t = s, A_t = a]
+$$
+
+消去策略的影响，我们可以得到最优动作价值函数
+
+$$
+Q^*(s, a) = \max_\pi Q_\pi(s, a)
+$$
+
+那么也可以有**状态价值函数**
+
+$$
+V_\pi(s) = \mathbb{E}[U_t | S_t = s] = \sum_{a} \pi(a|s) Q_\pi(s, a) (\text{全期望公式})
+$$
+
+**Bellman Equation**:(如何推导？)
+
+$$
+Q(s, a) = \mathbb{E}_{S_{t+1}:,A_{t+1}:}[U_t| S_t = s, A_t = a] = \sum_{s'} T(s, a, s') [R(s, a, s') + \gamma V(s')]
+$$
+
+$$
+V(s) = \mathbb{E}[U_t|S_t = s] = \sum_{a} \pi(a|s) \sum_{s'} T(s, a, s') [R(s, a, s') + \gamma V(s')]
+$$
+
+**Bellman Optimality Equation**:
 
 $$
 Q^*(s, a) = \sum_{s'} T(s, a, s') [R(s, a, s') + \gamma V^*(s')]
@@ -45,9 +77,13 @@ $$
 V^*(s) = \max_a Q^*(s, a)
 $$
 
-而在回报和状态转移概率都是已知的情况下，我们可以有多种求解方法：
+## 动态规划算法
 
-## Value Iteration
+而在回报和状态转移概率都是已知的情况下，即有模型的情况下，我们可以有多种求解方法：
+
+### Value Iteration
+
+我们对状态价值函数进行迭代更新，直到收敛，我们可以得到最优的状态价值函数，然后通过最优状态价值函数得到最优策略
 
 根据 Bellman 最优方程，我们可以得到如下的公式：
 
@@ -61,7 +97,7 @@ $$
 V_{k+1}(s) = \max_a \sum_{s'} T(s, a, s') [R(s, a, s') + \gamma V_k(s')] = \max_a Q_k(s, a)
 $$
 
-依据如上的等式，在一次迭代的时候遍历所有的状态，找出每一个状态对应的最大估计 Q 值，然后更新 V 值，直到收敛。最终的不动点对应着最优的 V 值。
+依据如上的等式，在一次迭代的时候遍历所有的状态，找出每一个状态对应的最大估计 Q 值，然后更新 V 值，直到收敛。最终的不动点对应着最优的 V 值，每一个状态对应的**最优动作**可以通过**最大化 Q 值**得到
 
 ```python
 def value_iteration(env:GridWorld, gamma=0.9, theta=1e-6):
@@ -142,7 +178,7 @@ Value-iteration converged at iteration# 154.
 ========== END  PATH ==========
 ```
 
-## Policy Iteration
+### Policy Iteration
 
 从一个初始化的策略出发，先对当前的策略进行**策略评估**，然后**改进策略**，评估改进的策略，再进一步改进策略，经过不断迭代更新，直到**策略收敛**，这种算法被称为“策略迭代”
 
@@ -205,7 +241,7 @@ def policy_evaluation(policy:np.ndarray, env:GridWorld, gamma=0.9, theta=1e-6):
 
 现在如果我们能够找到一个新的策略$\pi'$，使得$V^{\pi'}(s) \geq V^\pi(s)$，那么我们就可以得到一个更好的策略
 
-因此我们可以贪心的选择每一个状态动作价值最大的那个动作，也就是
+因此我们可以贪心的选择每一个状态动作价值最大的那个动作，也就是$\max V$
 
 $$
 \pi'(s) = \arg \max_a Q^\pi(s, a) = \arg \max_a \sum_{s'} T(s, a, s') [R(s, a, s') + \gamma V^\pi(s')]
@@ -312,14 +348,40 @@ Policy-iteration converged at iteration# 19.
 ========== END  PATH ==========
 ```
 
-## State-Action-Reward-State-Action (SARSA)
+## Temporal Difference Learning
+
+在实际的环境中，我们往往无法得到完整的环境信息，即我们无法得到状态转移概率和奖励函数，我们只能通过与环境的交互来得到这些信息，称为无模型学习
+
+在蒙特卡洛方法中，我们需要等到一个 episode 结束后，才能更新状态价值函数，而在 TD 方法中，我们可以在每一步更新状态价值函数
+
+即在蒙特卡洛方法中，获取期望回报的公式为
+
+$$
+V^\pi(s_t) = \mathbb{E}[G_t | S_t = s_t] = \frac{1}{N} \sum_{i=1}^{N} G_t
+$$
+
+增量更新公式为
+
+$$
+V(s_t) = V(s_t) + \alpha [G_t - V(s_t)]
+$$
+
+而在 TD 方法中，更新状态价值函数的公式为
+
+$$
+V(s_t) = V(s_t) + \alpha [r_t + \gamma V(s_{t+1}) - V(s_t)]
+$$
+
+这是因为通过单步采样，我们可以得到$r_t$和$s_{t+1}$，而在蒙特卡洛方法中，我们需要等到 episode 结束后才能得到$G_t$，而 TD 可以直接估计$G_t$
+
+### State-Action-Reward-State-Action (SARSA)
 
 一个表格由所有状态和动作组成，表格中的 Q-value 表示在某个状态下采取某个动作的价值，我们可以通过不断的更新这个表格来得到最优的策略
 
 这个表格的值由策略决定，策略变化，表格的值也会变化
 
 $$
-Q^\pi(s_t, a_t) = \mathbb{E}[R_{t} + \gamma Q^\pi(s_{t+1}, a_{t+1}) | S_t = s_t, A_t = a_t]
+Q^\pi(s_t, a_t) = \mathbb{E}[R_{t} + \gamma \max_{a} Q^\pi(s_{t+1}, a_{t+1}) | S_t = s_t, A_t = a_t]
 $$
 
 那么左右两边都是可以计算的，并且都是对 Q 值的估计，我们可以通过不断的迭代来更新这个表格
@@ -330,7 +392,9 @@ $$
 
 SARSA 用到了五元组$(s_t, a_t, r_t, s_{t+1}, a_{t+1})$，因此我们可以通过不断的迭代来更新这个表格
 
-在采样最佳策略的时候，使用$\epsilon$-greedy 策略，即以$\epsilon$的概率随机选择动作，以$1-\epsilon$的概率选择最优动作
+在**采样最佳策略的时候**，使用$\epsilon$-greedy 策略，即以$\epsilon$的概率随机选择动作，以$1-\epsilon$的概率选择最优动作
+
+请注意，抽样$a_t, a_{t+1}$均要使用$\epsilon$-greedy 策略
 
 $$
 a = \begin{cases}
