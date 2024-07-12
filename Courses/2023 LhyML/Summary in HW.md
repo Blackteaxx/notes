@@ -1,6 +1,11 @@
+## Tensor Board
+
+[tutorial 1](https://zhuanlan.zhihu.com/p/471198169)
+[tutorial 2](https://blog.csdn.net/qq_41656402/article/details/131123121)
+
 ## HW 1: Regression
 
-是一个回归任务，预测 COVID-19 的病例数目，使用前三天的数据预测第四天的数据
+回归任务，预测 COVID-19 的病例数目，使用前三天的数据预测第四天的数据
 
 使用`MSE`作为损失函数，需要进行的工作有
 
@@ -44,3 +49,5 @@
 运行时间为`9min`, mse 为`1.3608`
 
 至于 feature selection algorithm, 没有实现，因为是传统的特征选择算法，不清楚如何 expand to neural network
+
+## HW 2: Classification
