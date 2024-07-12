@@ -9,3 +9,8 @@ code/data/cifar-100-python/train
 
 *.pyc
 *.json
+.obsidian/plugins/obsidian-git/main.js
+.obsidian/plugins/obsidian-git/styles.css
+.obsidian/plugins/table-editor-obsidian/main.js
+.obsidian/plugins/table-editor-obsidian/styles.css
+*.canvas
