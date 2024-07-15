@@ -1,6 +1,12 @@
 ## Algothrim
 
-start from multiplication
+start from basic arithmetic
+
+### 1. Addition
+
+$\mathcal{O}(n)$, pass from right to left, and carry the 1 to the next digit. And at least we must read them into the memory, so the best cost is $\mathcal{O}(n)$
+
+### 2. Multiplication
 
 1. $\mathcal{O}(n^2)$ school method
 
@@ -44,3 +50,18 @@ start from multiplication
    $$
    T(n) = \frac{(\frac32)^{\log_2 n +1}-1}{\frac32 - 1} = \mathcal{O}(3^{\log_2 n}) = \mathcal{O}(n^{\log_2 3})
    $$
+
+## Big-O Notation
+
+Big O notation is a way that can describe the **asymptotic complexity** of a function when the argument tends towards a particular value or infinity. It is used to describe the **upper bound** of the function.
+
+> **Definition**
+>
+> $$
+> f(n) = \mathcal{O}(g(n)) \\
+> \text{ if } \exists c > 0, N \in \mathbb{N}, \forall n > N, 0 < f(n) \leq c \cdot g(n)
+> $$
+
+**An insightful analysis is based on the right simplifications**. When we analyze the concrete algorithm, we should do some **simplification**, for example, we can **assume that all the basic computer operations are the same cost**, and we can ignore the lower order terms and the constant factors.
+
+We can use the **inequality of limits**(in mathematical ananlysis) to prove the big-O notation.
