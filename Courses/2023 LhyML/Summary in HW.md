@@ -51,3 +51,54 @@
 至于 feature selection algorithm, 没有实现，因为是传统的特征选择算法，不清楚如何 expand to neural network
 
 ## HW 2: Classification
+
+分类任务，将一个音频帧分类为 41 个不同 phoneme
+
+### 数据描述
+
+- train_labels.txt: 每一行是一个音频的标签，包含有文件名和每一帧对应的 phoneme
+
+### 需要进行的工作有
+
+- run baseline model, test the ability of sample model
+- modify the architecture of DNN
+- implement batch normalization and dropout
+
+### Baseline Model
+
+一个多层的 Softmax 回归网络，架构是堆叠 Basic Block 的形式，每个 Basic Block 包含一个全连接层和一个 ReLU 激活函数，`input_dims -> output_dims`，堆叠了`hidden_layer`层，隐藏层的维度为`hidden_dims`
+
+- 合并音频帧的特征，`concat_nframes = 3`
+- 使用`Adam`作为优化器
+- 使用`CrossEntropy`作为损失函数
+- `num_epoch = 10`
+- `learning_rate = 1e-4`
+- `hidden_layers = 2`
+- `hidden_dim = 64`
+
+最终 Validation Accuracy 为`0.5041`
+
+### Medium Model
+
+主要修改了网络的架构，即 concat 的长度，以及隐藏层维度与层数
+
+1. Medium Model 1: `concat_nframes = 11`, `hidden_layers = 5`, `hidden_dim = 64`, `num_epoch = 10`, Validation Accuracy 为`0.58435`
+
+2. Medium Model 2: `concat_nframes = 15`, `hidden_layers = 15`, `hidden_dim = 128`, `num_epoch = 20`, Validation Accuracy 为`0.62155`
+
+### Strong Model
+
+1. Strong Model 1
+
+在 Medium Model 2 的基础上，添加了`Batch Normalization`、`Dropout`、`L2 Regularization`和余弦退火学习率调度
+
+- `batch_size = 512`
+- `dropout = 0.5`
+- `weight_decay = 0.01`
+- `scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(optimizer,T_0=8,T_mult=2,eta_min = learning_rate/2)`
+
+Validation Accuracy 为`0.42888`
+
+2. Strong Model 2
+
+Validation Accuracy 为`0.84554`

@@ -103,7 +103,65 @@ def Explore(G, v):
 
 ## Connectivity in directed graphs
 
+Huangyu P77, defined on the color of vertices.
+
 - Tree edge: $(u, v)$ is a tree edge if $v$ is the first time visited by `Explore(G, u)`
 - Back edge: $(u, v)$ is a back edge if $v$ is an ancestor of $u$ in the DFS tree
 - Forward edge: $(u, v)$ is a forward edge if $v$ is a descendant of $u$ but not a tree edge
 - Cross edge: $(u, v)$ is a cross edge if $u$ and $v$ are not ancestor of each other
+
+## DAG
+
+**D**irected **A**cyclic **G**raph is **a digraph with no cycles.**
+
+- **Question: How to check if a digraph is a DAG?**
+
+Huangyu P77
+
+- Back edge implies a cycle in a digraph
+
+```python
+def IsAcyclic(G):
+    Run DFS on G
+    output False if there is a back edge
+```
+
+- We can review the definition of back edge: $(u, v)$ is a back edge if $v$ is an ancestor of $u$ in the DFS tree.
+- and in the intervel
+
+  - v:[ u:[ ] ] is a back edge, it shows that the u is the successor of v, but $(u, v) \in E$, which means there is a cycle in the graph.
+
+- So we can propose that DAG **is equal to** there being no back edge in the graph. We should prove it.
+
+**Claim: A digraph is a DAG if and only if there is no back edge in the DFS tree.**
+
+> Proof:
+
+- If there is a back edge, then there is a cycle in the graph, so it is not a DAG.
+- If there is a cycle in the graph, let $v_1, v_2, \cdots, v_t$ be a cycle. Let **$v_i$ be the first vertex visited** by `Explore(G, v_1)` in the cycle. All the successors of $v_i$, maybe tree edges, back edges, forward edges, or cross edges. But there must be a node $v_j$ that is an ancestor of $v_i$(otherwise, $v_i$ is not the first vertex visited by `Explore(G, v_1)`). So $(v_j, v_i)$ is a back edge in the graph.
+
+> end proof
+
+## Topological ordering
+
+Given G that is DAG, want to order the vertices(of index 0 to n-1) such that if $(u, v) \in E$, then $u$ comes before $v$ in the ordering.
+
+```python
+def InverseTopologicalOrdering(G):
+    Run DFS on G
+    output the vertices in post order(or post in interval)
+```
+
+It depends on the following lemma:
+
+**Lemma: $(u,v) \in E \to post(u) > post(v)$**
+
+## Connectivity for digraphs
+
+**def: $u$ and $v$ are **strongly connected** if there is a path from $u$ to $v$ and a path from $v$ to $u$.**
+
+And the strongly connected components(SCCs) is the equivalence relation of the strongly connected vertices.
+
+**claim: every diagraph G is a DAG on the SCCs**
+
+_it means if we shrink all the SCCs into a super vertex, then the graph is a DAG._

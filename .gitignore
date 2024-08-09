@@ -14,3 +14,9 @@ code/data/cifar-100-python/train
 .obsidian/plugins/table-editor-obsidian/main.js
 .obsidian/plugins/table-editor-obsidian/styles.css
 *.canvas
+*.pt
+code/Lhy 2022ML HW/HW2 Classification/libriphone/.DS_Store
+code/Lhy 2022ML HW/HW2 Classification/libriphone/feat/.DS_Store
+code/Lhy 2022ML HW/HW2 Classification/libriphone/test_split.txt
+code/Lhy 2022ML HW/HW2 Classification/libriphone/train_labels.txt
+code/Lhy 2022ML HW/HW2 Classification/libriphone/train_split.txt
