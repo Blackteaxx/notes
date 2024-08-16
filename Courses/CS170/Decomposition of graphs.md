@@ -76,7 +76,7 @@ def Explore(G, v, components):
 
 ### The interval in DFS
 
-**Maintain a global clock** for "time on stack" and "time off stack".
+**Maintain a global clock** for 2 events (first discovered and last departured) in the DFS.
 
 ```python
 def DFS(G):
@@ -90,14 +90,21 @@ def DFS(G):
 
 def Explore(G, v):
     visited[v] = True
+
+    # Previsit
     pre[v] = clock
     clock += 1
+
     for u in G[v]:
         if not visited[u]:
             Explore(G, u)
+
+    # Postvisit
     post[v] = clock
     clock += 1
 ```
+
+_Property: for any node $u, v \in V$, the interval $[pre(u), post(u)]$, $[pre(v), post(v)]$ are either separate or one is contained within the other$_
 
 - if $(u,v) \in E$, then $pre(u) < pre(v) < post(v) < post(u)$
 
@@ -156,6 +163,10 @@ It depends on the following lemma:
 
 **Lemma: $(u,v) \in E \to post(u) > post(v)$**
 
+**Property: The DAG has at least a source vertex and at least a sink vertex**
+
+_Mark: The smallest post number comes last in the order, so it is the sink vertex. And conversely, the biggest post vertex is the source vertex._
+
 ## Connectivity for digraphs
 
 **def: $u$ and $v$ are **strongly connected** if there is a path from $u$ to $v$ and a path from $v$ to $u$.**
@@ -164,4 +175,64 @@ And the strongly connected components(SCCs) is the equivalence relation of the s
 
 **claim: every diagraph G is a DAG on the SCCs**
 
-_it means if we shrink all the SCCs into a super vertex, then the graph is a DAG._
+_it means if we shrink every SCC into a super vertex, then the graph is a DAG._
+
+- We need to recyle something about DFS
+  to find the SCCs.
+- If we get into one **sink SCC**(that means the super vertex is the end), then we can get out of it.
+- The critical point is that we can reverse the graph, and **the sink SCCs will become the source SCCs**.
+
+_**Side Qusetion**: Given degraph G, find any v in Source SCC_
+
+- The Last vertex in the post order of the graph must be in the source SCC.
+
+Emphasis: So we can get the **algothrim** to find the SCCs:
+
+```python
+def SCC(G):
+    Run DFS on G in post order, get Path p in a stack
+    Reverse G_R
+    each vertex in p.pop():
+        if not visited[v]:
+            Explore(G_R, v)
+            output the SCC
+```
+
+Hints: Reverse is a common operation in graph algorithms to augment the graph.
+
+## Shortest paths
+
+### Shortest Path on graphs that are unweighted and undirected
+
+_Q: Find distance of A to all other vertices_
+
+- BFS, use a queue to store the vertices to be visited.
+
+```python
+def BFS(G, s):
+    dist = [float.('inf')] * len(G)
+    dist[s] = 0
+    q = [s]
+    while q:
+        v = q.pop(0)
+        for u in G[v]:
+            if dist[u] == inf:
+                dist[u] = dist[v] + 1
+                q.append(u)
+```
+
+- The runtime of BFS is $O(n+m)$, like DFS.
+
+### Shortest Path with distances
+
+- Input: Graph G, source vertex s, lengths $l: E \to \mathbb{N}^+$
+- Output: dist$[v]$ = dist$(s,v)$
+
+_First Idea: Use BFS again_
+
+- Split the Weighted Graph into Unweighted Graphs(egde to the unit weight)
+- But the runtime is not polynomial.
+
+  - if the weight $w \leq 2^a$, then the number of edges is $O(n2^a)$
+
+So we need to find a better algorithm.

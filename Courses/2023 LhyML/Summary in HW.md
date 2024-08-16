@@ -3,6 +3,31 @@
 [tutorial 1](https://zhuanlan.zhihu.com/p/471198169)
 [tutorial 2](https://blog.csdn.net/qq_41656402/article/details/131123121)
 
+在 terminal 中输入以下命令，启动 tensorboard
+
+```shell
+tensorboard --logdir=runs
+```
+
+在 python 中导入 tensorboard 的库，使用方法如下
+
+```python
+from torch.utils.tensorboard import SummaryWriter
+
+# 创建一个writer对象，log_dir是保存日志的路径
+writer = SummaryWriter(log_dir='runs/')
+
+train_loss = sum(train_loss) / len(train_loss)
+train_acc = sum(train_accs) / len(train_accs)
+
+# Print the information.
+print(f"[ Train | {epoch + 1:03d}/{n_epochs:03d} ] loss = {train_loss:.5f}, acc = {train_acc:.5f}")
+
+# write to tensorboard
+writer.add_scalar('Loss/train', train_loss, epoch)
+writer.add_scalar('Accuracy/train', train_acc, epoch)
+```
+
 ## HW 1: Regression
 
 回归任务，预测 COVID-19 的病例数目，使用前三天的数据预测第四天的数据
