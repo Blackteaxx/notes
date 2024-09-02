@@ -127,3 +127,64 @@ Validation Accuracy 为`0.42888`
 2. Strong Model 2
 
 Validation Accuracy 为`0.84554`
+
+## HW 3: Image Classification
+
+图像分类任务，共有 11 类
+
+### 数据描述
+
+- ./train (Training set): 图像命名的格式为 “x_y.png”，其中 x 是类别，含有 10,000 张被标记的图像
+- ./valid (Valid set): 图像命名的格式为 “x_y.png”，其中 x 是类别，含有 3,643 张被标记的图像
+- ./test (Testing set): 图像命名的格式为 “n.png”，n 是 id，含有 3,000 张未标记的图像
+
+### 操作简述
+
+1. Data Augmentation
+
+`import torchvision.transforms as transforms`，使用`transforms.Compose`来组合多种数据增强方式，如`transforms.RandomHorizontalFlip`、`transforms.RandomRotation`、`transforms.RandomResizedCrop`等
+
+通过如下的操作使用到了图像的数据增强
+
+```python
+# However, it is also possible to use augmentation in the testing phase.
+# You may use train_tfm to produce a variety of images and then test using ensemble methods
+train_tfm = transforms.Compose([
+    # Resize the image into a fixed shape (height = width = 128)
+    transforms.Resize((128, 128)),
+    # You may add some transforms here.
+
+    # 几何变换
+    transforms.RandomHorizontalFlip(0.5), # 随机横向翻转
+    transforms.RandomVerticalFlip(0.5), # 随机竖向翻转
+    transforms.RandomApply(transforms=[
+        transforms.RandomRotation(degrees=(0, 60))],
+                           p=0.6), # 随机旋转
+    transforms.RandomAffine(30), # 随机仿射
+
+    # 像素变换
+    transforms.RandomGrayscale(p=0.2), # 随机灰度化，p为灰度化的概率
+
+
+    # ToTensor() should be the last one of the transforms.
+    transforms.ToTensor(),
+])
+
+def __getitem__(self,idx):
+        fname = self.files[idx]
+        im = Image.open(fname)
+        im = self.transform(im)
+
+        try:
+            label = int(fname.split("\\")[-1].split("_")[0])
+        except:
+            label = -1 # test has no label
+
+        return im,label
+```
+
+这样操作保证了在每一个 epoch 中，每一个 batch 的数据都是不同的，增加了模型的泛化能力
+
+2. Model
+
+采用`ResNet`跳连接方式，首先尝试自己实现一个`ResNet`，然后使用`torchvision.models.resnet18`来实现

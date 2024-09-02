@@ -236,3 +236,92 @@ _First Idea: Use BFS again_
   - if the weight $w \leq 2^a$, then the number of edges is $O(n2^a)$
 
 So we need to find a better algorithm.
+
+### Dijkstra
+
+**State**
+
+- estimates: There are some estimates of the shortest path from s to v, and we want to update the estimates when the program is going.
+- Subset: $K = \{v | dist[v] = dist(s,v)\}$
+
+**Invariant**
+
+**Base Case**:
+
+$K = \{s\}$
+
+**Inductive step**:
+
+All shortest path construct a tree(not proved).
+
+And there are some vertices that are connected to the tree and not in the tree.
+
+We want to enlarge the tree by adding the vertex with the smallest estimate.
+
+- How to extend K(the tree)?
+
+1. We want to prove that **$one$ shortest path is in one hop away from $K$.**
+
+We Assume that $a$ is the vertex that is not in $K$ and is closest to $s$.
+
+**Claim**: $a$ is $1$-hop away from $K$
+
+![img](https://img2023.cnblogs.com/blog/3436855/202408/3436855-20240816221343217-1351458156.png)
+
+> Proof: Suppose not, let $b$ be the first vertex on the shortest path from $s$ to $a$ that is not in $K$. So $b$ is not in $K$, and $b$ is the closest vertex to $s$ that is not in $K$. So $b$ is closer to $s$ than $a$. But $a$ is the closest vertex to $s$ that is not in $K$, so it is a contradiction.
+
+So the algorithm is as follows:
+
+```python
+def Dijkstra(G, l, s):
+    dist = [float('inf')] * len(G)
+    dist[s] = 0
+    K = {}
+    while len(K) < len(G):
+        pick the vertex v not in K with the smallest dist[v]
+        K.add(v)
+        for u in G[v]:
+            dist[u] = min(dist[u], dist[v] + l[v][u])
+```
+
+**Runtime**:
+
+- $O(n)$ to initialize dist
+- $O(n)$ to get the minimal vertex
+- $O(m)$ to update the dist
+
+All the runtime is $O((n+m) \cdot \log n)$, by using the priority queue.
+
+### The case of negative weights - Bellman-ford
+
+The problem is not well-defined when it comes to negative cycles.
+
+So we just consider the graph without negative cycles.
+
+The claim in the positive weights is not true in the negative weights, there may not be a shortest path in one hop away from $K$.
+
+We let `update(u, v) = min(dist[v], dist[u] + l[u][v])`
+
+1. the update function is safe: $dist(s,v) \leq min(dist[v], dist[u] + l[u][v])$
+
+2. if $s \to \cdots \to u \to v$ is the shortest path and the dist[u] is correct, then the `update` makes the dist[v] correct.
+
+So if we update the $dist[v]$ in the order of the edges in the path, then the **$dist[v]$ is correct**.
+
+In the basic case, the egde $(s,u) \in E$, we can immediately find the correct $dist[u]$.
+
+And in the inductive step, we can update the $dist[v]$ in the order of the edges in the path.
+
+So we can iterate $| V | - 1$ times to get the correct dist.(if there is no negative cycle)
+
+```python
+def BellmanFord(G, l, s):
+    dist = [float('inf')] * len(G)
+    dist[s] = 0
+    for i in range(len(G) - 1):
+        for e in G:
+            u, v = e
+            dist[v] = min(dist[v], dist[u] + l[u][v])
+```
+
+**Runtime**: $O(|V||E|)$
