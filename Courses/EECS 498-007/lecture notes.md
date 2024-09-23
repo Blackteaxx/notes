@@ -84,3 +84,12 @@ Care about the ability of generlization on unseen data. The best way is to split
 After that, we should produce the cross-validation to tune the hyperparameters and test the ability of the model.
 
 We also care about the universal approximation that introduce that as the number of training samples approaches infinity, the k-NN classifier approaches the Bayes error rate.
+
+Due to the curse of dimensionality, the k-NN classifier is not suitable for high-dimensional data.(not enough data to cover the space)
+
+Drawbacks:
+
+- Slow in testing
+- Distance metric on pixels is not informative
+
+But K-NN using feature vectors computed by CNN can achieve good performance.(Devlin et al, "Exploring Nearest Neighbor Approaches for Image Captioning", CVPR 2015.)
